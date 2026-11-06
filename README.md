@@ -93,6 +93,10 @@ English, Russian, Spanish, Italian, French, German, Portuguese, Polish, Chinese,
 
 ## Release Notes
 
+### 1.3.2
+
+- Changed: added author information to the extension manifest
+
 ### 1.3.1
 
 - Changed: extension is now bundled with esbuild for a smaller package and faster startup

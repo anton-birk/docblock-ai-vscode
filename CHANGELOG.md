@@ -2,6 +2,12 @@
 
 All notable changes to DocBlock AI will be documented in this file.
 
+## [1.3.2] - 2026-11-06
+
+### Changed
+
+- Added author information to the extension manifest
+
 ## [1.3.1] - 2026-11-06
 
 ### Changed
