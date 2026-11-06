@@ -63,9 +63,9 @@ DocBlock AI: Generate Documentation
 | ---------------------------- | --------------------- | ------------------------------------------------------------------ |
 | `docblock-ai.provider`       | `openai`              | AI provider: `openai`, `copilot`, or `claude`                      |
 | `docblock-ai.openaiApiKey`   | `""`                  | OpenAI API key (for OpenAI provider)                               |
-| `docblock-ai.model`          | `gpt-3.5-turbo`       | OpenAI model (`gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`, `gpt-4o`)  |
+| `docblock-ai.model`          | `gpt-6.1-terra`       | OpenAI model (`gpt-6.1-terra`, `gpt-6.1-sol`, `gpt-5.5`, `gpt-5.4-mini`) |
 | `docblock-ai.claudeApiKey`   | `""`                  | Anthropic API key (for Claude provider)                            |
-| `docblock-ai.claudeModel`    | `claude-sonnet-4-6`   | Claude model (`claude-haiku-4-5-20251001`, `claude-sonnet-4-6`, `claude-opus-4-7`) |
+| `docblock-ai.claudeModel`    | `claude-sonnet-5-5`   | Claude model (`claude-sonnet-5-5`, `claude-opus-5-5`, `claude-fable-5-1`, `claude-opus-4-7`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`) |
 | `docblock-ai.language`       | `English`             | Language for generated documentation text                          |
 
 ## Supported Programming Languages
@@ -92,6 +92,14 @@ English, Russian, Spanish, Italian, French, German, Portuguese, Polish, Chinese,
 - Copilot provider availability depends on your GitHub Copilot subscription and the VS Code version.
 
 ## Release Notes
+
+### 1.3.0
+
+- Added: Claude Sonnet 5.5 (new default), Opus 5.5 and Fable 5.1
+- Added: GPT-6.1 Terra (new OpenAI default), GPT-6.1 Sol, GPT-5.5 and GPT-5.4 mini
+- Removed: retired OpenAI models (gpt-3.5-turbo, gpt-4, gpt-4-turbo, gpt-4o); existing settings switch to GPT-6.1 Terra
+- Fixed: empty results with Claude models that think before answering; refusals now show a clear message
+- Added: request timeouts so generation no longer hangs on network issues
 
 ### 1.2.4
 

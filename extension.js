@@ -55,6 +55,17 @@ const DOC_FORMATS = {
 
 const SUPPORTED_LANG_IDS = Object.keys(DOC_FORMATS)
 
+const OPENAI_MODELS = ['gpt-6.1-terra', 'gpt-6.1-sol', 'gpt-5.5', 'gpt-5.4-mini']
+const DEFAULT_OPENAI_MODEL = 'gpt-6.1-terra'
+const DEFAULT_CLAUDE_MODEL = 'claude-sonnet-5-5'
+const CLAUDE_FALLBACK_MODELS = [
+	'claude-sonnet-5-5',
+	'claude-opus-5-5',
+	'claude-fable-5-1',
+]
+// Keeps generation from hanging on network issues.
+const REQUEST_TIMEOUT_MS = 90000
+
 function activate(context) {
 	let disposable = vscode.commands.registerCommand(
 		'docblock-ai.generateDoc',
@@ -276,7 +287,7 @@ async function sendToCopilot(
 async function sendToClaude(code, langId, docLanguage, fileContext) {
 	const config = vscode.workspace.getConfiguration('docblock-ai')
 	const apiKey = config.get('claudeApiKey')
-	const model = config.get('claudeModel') || 'claude-sonnet-4-6'
+	const model = config.get('claudeModel') || DEFAULT_CLAUDE_MODEL
 
 	if (!apiKey) {
 		vscode.window.showInformationMessage(
@@ -285,17 +296,42 @@ async function sendToClaude(code, langId, docLanguage, fileContext) {
 		return false
 	}
 
-	const client = new Anthropic.default({ apiKey })
+	const client = new Anthropic.default({
+		apiKey,
+		timeout: REQUEST_TIMEOUT_MS,
+	})
 	const prompt = buildPrompt(code, langId, docLanguage, fileContext)
 
-	try {
-		const response = await client.messages.create({
-			model,
-			max_tokens: 1024,
-			messages: [{ role: 'user', content: prompt }],
-		})
+	const params = {
+		model,
+		// Newer models always think, and thinking tokens count against max_tokens.
+		max_tokens: 16000,
+		messages: [{ role: 'user', content: prompt }],
+	}
+	// Doc comments are a simple task; low effort keeps them fast and cheap. Haiku 4.5 rejects effort.
+	if (!model.startsWith('claude-haiku')) {
+		params.output_config = { effort: 'low' }
+	}
+	// Retry classifier refusals on Anthropic's recommended fallback model.
+	if (CLAUDE_FALLBACK_MODELS.includes(model)) {
+		params.betas = ['server-side-fallback-2026-07-01']
+		params.fallbacks = 'default'
+	}
 
-		const content = response.content?.[0]?.text?.trim()
+	try {
+		const response = await client.beta.messages.create(params)
+
+		if (response.stop_reason === 'refusal') {
+			vscode.window.showErrorMessage(
+				'Claude declined to document this code. Try a different model.',
+			)
+			return false
+		}
+
+		// Thinking blocks may precede the answer, so pick the first text block rather than content[0].
+		const content = response.content
+			?.find(block => block.type === 'text')
+			?.text?.trim()
 		if (content) return content
 
 		vscode.window.showInformationMessage(
@@ -312,7 +348,11 @@ async function sendToClaude(code, langId, docLanguage, fileContext) {
 async function sendToOpenAI(code, langId, docLanguage, fileContext) {
 	const config = vscode.workspace.getConfiguration('docblock-ai')
 	const apiKey = config.get('openaiApiKey')
-	const model = config.get('model') || 'gpt-3.5-turbo'
+	const configuredModel = config.get('model')
+	// gpt-4-turbo / gpt-3.5-turbo are shut down and gpt-4o is being retired; fall back to the default.
+	const model = OPENAI_MODELS.includes(configuredModel)
+		? configuredModel
+		: DEFAULT_OPENAI_MODEL
 
 	if (!apiKey) {
 		vscode.window.showInformationMessage(
@@ -321,7 +361,7 @@ async function sendToOpenAI(code, langId, docLanguage, fileContext) {
 		return false
 	}
 
-	const openai = new OpenAI({ apiKey })
+	const openai = new OpenAI({ apiKey, timeout: REQUEST_TIMEOUT_MS })
 	const prompt = buildPrompt(code, langId, docLanguage, fileContext)
 
 	try {

@@ -2,6 +2,22 @@
 
 All notable changes to DocBlock AI will be documented in this file.
 
+## [1.3.0] - 2026-11-06
+
+### Added
+
+- Claude Sonnet 5.5, Opus 5.5 and Fable 5.1; Claude Sonnet 5.5 is the new default
+- GPT-6.1 Terra, GPT-6.1 Sol, GPT-5.5 and GPT-5.4 mini; GPT-6.1 Terra is the new OpenAI default
+- Request timeouts so generation no longer hangs on network issues
+
+### Removed
+
+- Retired OpenAI models (gpt-4-turbo, gpt-3.5-turbo, gpt-4o) and gpt-4; settings using them switch to GPT-6.1 Terra
+
+### Fixed
+
+- Empty results with Claude models that think before answering; Claude refusals now show a clear message
+
 ## [1.2.4] - 2026-04-23
 
 ### Fixed
