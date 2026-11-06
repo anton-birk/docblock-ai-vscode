@@ -3,7 +3,7 @@
 	"displayName": "DocBlock AI",
 	"description": "Generate documentation comments for any programming language using OpenAI GPT or GitHub Copilot. Supports PHP, JS, TS, Python, Java, C#, Go, Ruby, Rust.",
 	"version": "1.3.0",
-	"publisher": "Anton Birk",
+	"publisher": "AntonBerestov",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
