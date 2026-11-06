@@ -2,6 +2,13 @@
 
 All notable changes to DocBlock AI will be documented in this file.
 
+## [1.3.1] - 2026-11-06
+
+### Changed
+
+- Extension is now bundled with esbuild: smaller package (8 files instead of ~1800) and faster startup
+- Added MIT license
+
 ## [1.3.0] - 2026-11-06
 
 ### Added

@@ -93,6 +93,11 @@ English, Russian, Spanish, Italian, French, German, Portuguese, Polish, Chinese,
 
 ## Release Notes
 
+### 1.3.1
+
+- Changed: extension is now bundled with esbuild for a smaller package and faster startup
+- Added: MIT license
+
 ### 1.3.0
 
 - Added: Claude Sonnet 5.5 (new default), Opus 5.5 and Fable 5.1
